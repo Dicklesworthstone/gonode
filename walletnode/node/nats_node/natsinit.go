@@ -5,14 +5,17 @@ import (
 )
 
 type natsClient struct {
-	NatsConn nats.NatsConnection
+	NatsConn nats.Connection
 }
 
-func NewClient(host string, port int) (natsClient, error) {
-	// Init Nats Connection
-	NatsConn, err := nats.Connect(host, port)
-	if err != nil {
-		return natsClient{NatsConn}, err
+// NewClient return natsClient instance
+func NewClient(host string, port int) (*natsClient) {
+	// Init Nats Connection 
+	NatsConn, err := nats.Connect(host, port) 
+	if err != nil { 
+		return &natsClient{}  
 	}
-	return natsClient{NatsConn}, nil
+	return &natsClient{NatsConn} 
 }
+
+ 

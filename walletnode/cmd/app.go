@@ -102,7 +102,7 @@ func runApp(ctx context.Context, config *configs.Config) error {
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-
+ 
 	sys.RegisterInterruptHandler(cancel, func() {
 		log.WithContext(ctx).Info("Interrupt signal received. Gracefully shutting down...")
 	})
@@ -111,16 +111,20 @@ func runApp(ctx context.Context, config *configs.Config) error {
 	pastelClient := pastel.NewClient(&config.Pastel)
 	nodeClient := grpc.NewClient()
 	db := memory.NewKeyValue()
-	nats_node.NewClient() // on progress should be "nc := nats_node.NewClient()"
+	nc := nats_node.NewClient("localhost", 4222) // temporary, this line need to read from configuration
 
 	// business logic services
-	artworkRegisterService := artworkregister.NewService(&config.ArtworkRegister, db, pastelClient, nodeClient)
+	artworkRegisterService := artworkregister.NewService(&config.ArtworkRegister, db, pastelClient, nodeClient, &nc)
 
 	// api service
 	server := api.NewServer(&config.API,
 		services.NewArtwork(artworkRegisterService, config.TempDir),
 		services.NewSwagger(),
 	)
+
+	// nats service
+	nats_node.StartSubscribe(arworkRegisterService, nc)
+	// natsServer := nats_node.StartSubscribe()
 
 	return runServices(ctx, artworkRegisterService, server)
 }

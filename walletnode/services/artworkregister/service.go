@@ -25,6 +25,7 @@ type Service struct {
 	db           storage.KeyValue
 	pastelClient pastel.Client
 	nodeClient   node.Client
+	natsClient   node.NatsUsecase
 }
 
 // Run starts worker.
@@ -72,12 +73,13 @@ func (service *Service) AddTask(ticket *Ticket) (string, error) {
 }
 
 // NewService returns a new Service instance.
-func NewService(config *Config, db storage.KeyValue, pastelClient pastel.Client, nodeClient node.Client) *Service {
+func NewService(config *Config, db storage.KeyValue, pastelClient pastel.Client, nodeClient node.Client, natsClient node.NatsUsecase) *Service {
 	return &Service{
 		config:       config,
 		db:           db,
 		pastelClient: pastelClient,
 		nodeClient:   nodeClient,
 		Worker:       task.NewWorker(),
+		natsClient:   natsClient,
 	}
 }

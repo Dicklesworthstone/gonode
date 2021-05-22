@@ -5,12 +5,18 @@ import (
 	"github.com/pastelnetwork/gonode/common/nats"
 )
 
+// UploadSignedTicket implements interface node.UploadSignedTicket()
 func (nc *natsClient) UploadSignedTicket(msg interface{}, destSubject string) error {
 	outMessage, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
 
+	// After marshalling object JSON to String, then Encrypt in here
+
+	// -- end here
+
+	// Publish message to Super Nodes who are subscribed to Destination Subject
 	err = nats.Publish(outMessage, destSubject, nc.NatsConn)
 	if err != nil {
 		return err

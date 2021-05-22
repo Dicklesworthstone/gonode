@@ -15,7 +15,7 @@ const (
 
 var defaultConfigPaths = []string{
 	file.Path("$HOME", beforeVistaAppDir, "Pastel"),
-	file.Path("$HOME", fromVistaAppDir, "Pastel"),
+	file.Path("$HOME", fromVistaAppDir, "Pastel"), 
 	".",
 }
 

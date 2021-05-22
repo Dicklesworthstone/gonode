@@ -5,11 +5,13 @@ import (
 	nats "github.com/nats-io/nats.go"
 )
 
-type NatsConnection struct {
+// Connection for saving *nats.Conn object to used for Subscribing or Publishing
+type Connection struct {
 	Natsconn *nats.Conn
 }
 
-func Publish(message []byte, destSubject string, nc NatsConnection) error {
+// Publish for publish message to Destination Subject / Topic
+func Publish(message []byte, destSubject string, nc Connection) error {
 	err := nc.Natsconn.Publish(destSubject, message)
 	if err != nil {
 		return err
@@ -17,12 +19,13 @@ func Publish(message []byte, destSubject string, nc NatsConnection) error {
 	return nil
 }
 
-func Connect(host string, port int) (NatsConnection, error) {
+// Connect for start connection to Nats and save object nats connection to struct Connection
+func Connect(host string, port int) (Connection, error) {
 	// Init Nats Connection
 	natsServer := fmt.Sprintf("%s:%d", host, port)
 	nc, err := nats.Connect(natsServer)
 	if err != nil {
-		return NatsConnection{}, err
+		return Connection{}, err
 	}
-	return NatsConnection{nc}, nil
+	return Connection{nc}, nil
 }
