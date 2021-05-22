@@ -5,20 +5,24 @@ import (
 	nats "github.com/nats-io/nats.go"
 )
 
-func Publish(message []byte, destSubject string, nc *nats.Conn) error {
-	err := nc.Publish(destSubject, message)
+type NatsConnection struct {
+	Natsconn *nats.Conn
+}
+
+func Publish(message []byte, destSubject string, nc NatsConnection) error {
+	err := nc.Natsconn.Publish(destSubject, message)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func Connect(host string, port int) (*nats.Conn, error) {
+func Connect(host string, port int) (NatsConnection, error) {
 	// Init Nats Connection
 	natsServer := fmt.Sprintf("%s:%d", host, port)
 	nc, err := nats.Connect(natsServer)
 	if err != nil {
-		return nil, err
+		return NatsConnection{}, err
 	}
-	return nc, nil
+	return NatsConnection{nc}, nil
 }

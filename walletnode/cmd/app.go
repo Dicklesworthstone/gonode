@@ -18,6 +18,7 @@ import (
 	"github.com/pastelnetwork/gonode/walletnode/api/services"
 	"github.com/pastelnetwork/gonode/walletnode/configs"
 	"github.com/pastelnetwork/gonode/walletnode/node/grpc"
+	"github.com/pastelnetwork/gonode/walletnode/node/nats_node"
 	"github.com/pastelnetwork/gonode/walletnode/services/artworkregister"
 )
 
@@ -110,6 +111,7 @@ func runApp(ctx context.Context, config *configs.Config) error {
 	pastelClient := pastel.NewClient(&config.Pastel)
 	nodeClient := grpc.NewClient()
 	db := memory.NewKeyValue()
+	nats_node.NewClient() // on progress should be "nc := nats_node.NewClient()"
 
 	// business logic services
 	artworkRegisterService := artworkregister.NewService(&config.ArtworkRegister, db, pastelClient, nodeClient)

@@ -1,12 +1,18 @@
 package nats_node
 
-type natsClient struct{}
+import (
+	"github.com/pastelnetwork/gonode/common/nats"
+)
 
-func NewClient() *nats.Conn {
+type natsClient struct {
+	NatsConn nats.NatsConnection
+}
+
+func NewClient(host string, port int) (natsClient, error) {
 	// Init Nats Connection
-	nc, err := nats.Connect(host, port)
+	NatsConn, err := nats.Connect(host, port)
 	if err != nil {
-
+		return natsClient{NatsConn}, err
 	}
-	return nc
+	return natsClient{NatsConn}, nil
 }
