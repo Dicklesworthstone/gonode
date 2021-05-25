@@ -1,12 +1,24 @@
-package nats_node
+package nats_client
 
 import (
 	"encoding/json"
 
-	"github.com/pastelnetwork/gonode/supernode/model"
-
 	"github.com/pastelnetwork/gonode/common/nats"
+
+	"github.com/pastelnetwork/gonode/supernode/model"
+	"github.com/pastelnetwork/gonode/supernode/node/nats_node"
 )
+
+type natsClient struct {
+	NatsConn nats.Connection
+}
+
+// NewPublishService Create Repository / Service for send Message via Publish Nats
+func NewPublishService(NatsConn nats.Connection) nats_node.PastelMail {
+	return &natsClient{
+		NatsConn: NatsConn,
+	}
+}
 
 // MailToSuperNode implements interface node.UploadSignedTicket()
 func (nc *natsClient) MailToSuperNode(msg model.PastelMailMessaging, destSubject string) error {

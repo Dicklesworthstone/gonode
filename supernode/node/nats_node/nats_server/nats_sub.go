@@ -1,23 +1,29 @@
-package nats_node
+package nats_server
 
 import (
 	"encoding/json"
-	"fmt"
 	"sync"
 
-	"github.com/panjf2000/ants"
-	"github.com/pastelnetwork/gonode/supernode/model"
+	natgo "github.com/nats-io/nats.go"
 
-	nats "github.com/nats-io/nats.go"
+	"github.com/panjf2000/ants"
+	"github.com/pastelnetwork/gonode/common/nats"
+	"github.com/pastelnetwork/gonode/supernode/model"
+	"github.com/pastelnetwork/gonode/supernode/services/pastelmail"
 )
 
+type NatsServer struct {
+	pastelemail pastelmail.PastelMailUsecase
+}
+
 // StartSubscribe to Start Subscribe Subject / Topic to Nats
-func (n *natsClient) StartSubscribe(services []func()) {
-	// what Subscribe need
-	// - subscribe many subject
+func StartSubscribe(service pastelmail.PastelMailUsecase, n nats.Connection) {
+	handler := NatsServer{
+		pastelemail: service,
+	}
 
 	var (
-		topic = "Pastel Mail Messaging" // example
+		topic = "pastel.pastelmail" // example
 		wg    *sync.WaitGroup
 	)
 	poolingConnection, _ := ants.NewPool(20) // example 20
@@ -25,11 +31,10 @@ func (n *natsClient) StartSubscribe(services []func()) {
 	wg.Add(1)
 	go func() {
 		// Simple Async Subscriber
-		fmt.Printf("Application is Subscribing Pastel Mail Message %v", topic)
-		nc.NatsConn.Natsconn.Subscribe(topic, func(m *nats.Msg) {
-			task := func(m *nats.Msg) func() {
+		n.Natsconn.Subscribe(topic, func(m *natgo.Msg) {
+			task := func(m *natgo.Msg) func() {
 				return func() {
-					ReceivedMessage(m)
+					handler.ReceivedMessage(m)
 				}
 			}
 			poolingConnection.Submit(task(m))
@@ -40,9 +45,11 @@ func (n *natsClient) StartSubscribe(services []func()) {
 }
 
 // ReceivedMessage to processing input message from Nats from byte to Model
-func ReceivedMessage(m *nats.Msg) {
+func (natserver *NatsServer) ReceivedMessage(m *natgo.Msg) {
 	// If Message is encrypted first before send to nats
 	// decrypt in here
+
+	//
 
 	// Unmarshall
 	inp := model.PastelMailMessaging{}
@@ -50,4 +57,6 @@ func ReceivedMessage(m *nats.Msg) {
 	if err != nil {
 		return
 	}
+
+	natserver.pastelemail.DoSomething(inp)
 }
