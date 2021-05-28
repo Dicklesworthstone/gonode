@@ -99,7 +99,7 @@ func objective(trial goptuna.Trial) (float64, error) {
 		}
 	}
 
-	correlationMethodIndex, err := trial.SuggestDiscreteUniform("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1), 1.0)
+	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1), 1.0)
 	if err != nil {
 		return 0, errors.New(err)
 	}
@@ -158,7 +158,7 @@ func runStudy(studyName string) error {
 	study, err := goptuna.CreateStudy(
 		studyName,
 		goptuna.StudyOptionStorage(storage),
-		goptuna.StudyOptionRelativeSampler(cmaes.NewSampler()),
+		goptuna.StudyOptionRelativeSampler(cmaes.NewSampler(cmaes.SamplerOptionIPop(2))),
 		goptuna.StudyOptionLoadIfExists(true),
 	)
 	if err != nil {
