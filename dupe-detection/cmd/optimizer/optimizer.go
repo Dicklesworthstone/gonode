@@ -13,8 +13,8 @@ import (
 	combinations "github.com/mxschmitt/golang-combinations"
 	"gorm.io/driver/mysql"
 
-	"github.com/c-bata/goptuna/cmaes"
 	"github.com/c-bata/goptuna/rdb.v2"
+	"github.com/c-bata/goptuna/tpe"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -158,7 +158,8 @@ func runStudy(studyName string) error {
 	study, err := goptuna.CreateStudy(
 		studyName,
 		goptuna.StudyOptionStorage(storage),
-		goptuna.StudyOptionRelativeSampler(cmaes.NewSampler(cmaes.SamplerOptionIPop(2))),
+		//goptuna.StudyOptionRelativeSampler(cmaes.NewSampler(cmaes.SamplerOptionIPop(2))),
+		goptuna.StudyOptionSampler(tpe.NewSampler()),
 		goptuna.StudyOptionLoadIfExists(true),
 	)
 	if err != nil {
