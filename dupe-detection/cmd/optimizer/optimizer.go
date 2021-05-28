@@ -99,11 +99,11 @@ func objective(trial goptuna.Trial) (float64, error) {
 		}
 	}
 
-	correlationMethodIndex, err := trial.SuggestStepInt("CorrelationMethodsOrderIndex", 0, len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1, 1)
+	correlationMethodIndex, err := trial.SuggestDiscreteUniform("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1), 1.0)
 	if err != nil {
 		return 0, errors.New(err)
 	}
-	correlationMethodsOrder := append(config.StableOrderOfCorrelationMethods, allOrderedCombinationsOfUnstableMethodsAsStrings[correlationMethodIndex])
+	correlationMethodsOrder := append(config.StableOrderOfCorrelationMethods, allOrderedCombinationsOfUnstableMethodsAsStrings[int(correlationMethodIndex)])
 	config.CorrelationMethodsOrder = strings.Join(correlationMethodsOrder, " ")
 	if err != nil {
 		return 0, errors.New(err)
