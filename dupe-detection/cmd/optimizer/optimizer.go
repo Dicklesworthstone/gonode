@@ -10,7 +10,6 @@ import (
 
 	"github.com/c-bata/goptuna"
 	"github.com/gitchander/permutation"
-	combinations "github.com/mxschmitt/golang-combinations"
 	"gorm.io/driver/mysql"
 
 	"github.com/c-bata/goptuna/rdb.v2"
@@ -90,13 +89,20 @@ func objective(trial goptuna.Trial) (float64, error) {
 		return 0, errors.New(err)
 	}*/
 
-	allCombinationsOfUnstableMethods := combinations.All(config.UnstableOrderOfCorrelationMethods)
+	/*allCombinationsOfUnstableMethods := combinations.All(config.UnstableOrderOfCorrelationMethods)
 	var allOrderedCombinationsOfUnstableMethodsAsStrings []string
 	for _, combination := range allCombinationsOfUnstableMethods {
 		permutator := permutation.New(permutation.StringSlice(combination))
 		for permutator.Next() {
 			allOrderedCombinationsOfUnstableMethodsAsStrings = append(allOrderedCombinationsOfUnstableMethodsAsStrings, strings.Join(combination, " "))
 		}
+	}*/
+
+	var allOrderedCombinationsOfUnstableMethodsAsStrings []string
+	combination := config.CorrelationMethodNameArray
+	permutator := permutation.New(permutation.StringSlice(combination))
+	for permutator.Next() {
+		allOrderedCombinationsOfUnstableMethodsAsStrings = append(allOrderedCombinationsOfUnstableMethodsAsStrings, strings.Join(combination, " "))
 	}
 
 	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1), 1.0)

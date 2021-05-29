@@ -883,7 +883,7 @@ func NewComputeConfig() ComputeConfig {
 	config.MIThreshold = 5.28
 
 	config.CorrelationMethodNameArray = []string{
-		//"MI",
+		"MI",
 		"PearsonR",
 		"SpearmanRho",
 		"KendallTau",
