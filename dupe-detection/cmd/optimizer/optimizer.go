@@ -98,22 +98,21 @@ func objective(trial goptuna.Trial) (float64, error) {
 		}
 	}*/
 
-	var allOrderedCombinationsOfUnstableMethodsAsStrings []string
+	var allOrderedCombinationsOfMethodsAsStrings []string
 	combination := config.CorrelationMethodNameArray
 	permutator := permutation.New(permutation.StringSlice(combination))
 	for permutator.Next() {
-		allOrderedCombinationsOfUnstableMethodsAsStrings = append(allOrderedCombinationsOfUnstableMethodsAsStrings, strings.Join(combination, " "))
+		allOrderedCombinationsOfMethodsAsStrings = append(allOrderedCombinationsOfMethodsAsStrings, strings.Join(combination, " "))
 	}
 
-	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfUnstableMethodsAsStrings)-1), 1.0)
+	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfMethodsAsStrings)-1), 1.0)
 	if err != nil {
 		return 0, errors.New(err)
 	}
-	correlationMethodsOrder := append(config.StableOrderOfCorrelationMethods, allOrderedCombinationsOfUnstableMethodsAsStrings[int(correlationMethodIndex)])
-	config.CorrelationMethodsOrder = strings.Join(correlationMethodsOrder, " ")
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	//correlationMethodsOrder := append(config.StableOrderOfCorrelationMethods, allOrderedCombinationsOfMethodsAsStrings[int(correlationMethodIndex)])
+	//config.CorrelationMethodsOrder = strings.Join(correlationMethodsOrder, " ")
+
+	config.CorrelationMethodsOrder = allOrderedCombinationsOfMethodsAsStrings[int(correlationMethodIndex)]
 
 	//config.CorrelationMethodsOrder = "MI PearsonR SpearmanRho BootstrappedKendallTau BootstrappedBlomqvistBeta HoeffdingDRound1 HoeffdingDRound2"
 	//config.CorrelationMethodsOrder = "PearsonR SpearmanRho KendallTau HoeffdingD BlomqvistBeta"
