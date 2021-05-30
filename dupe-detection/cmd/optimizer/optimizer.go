@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/gitchander/permutation"
 	"github.com/maxhora/goptuna"
+	"golang.org/x/sync/errgroup"
 	"gorm.io/driver/mysql"
 
 	"github.com/maxhora/goptuna/rdb.v2"
@@ -41,6 +43,8 @@ func objective(trial goptuna.Trial) (float64, error) {
 		return 0, errors.New(err)
 	}
 
+	g, _ := errgroup.WithContext(context.Background())
+
 	err = trial.SetUserAttr("TrimByPercentile", fmt.Sprintf("%v", config.TrimByPercentile))
 	if err != nil {
 		return 0, errors.New(err)
@@ -52,46 +56,63 @@ func objective(trial goptuna.Trial) (float64, error) {
 		return 0, errors.New(err)
 	}
 
-	fmt.Println("Suggesting MIThreshold...")
+	g.Go(func() error {
+		fmt.Println("Suggesting MIThreshold...")
+		config.MIThreshold, err = trial.SuggestFloat("MIThreshold", 5.2, 5.4)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 
-	config.MIThreshold, err = trial.SuggestFloat("MIThreshold", 5.2, 5.4)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting Pearson...")
+		config.PearsonDupeThreshold, err = trial.SuggestFloat("Pearson", 0.99, 0.99999)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 
-	fmt.Println("Suggesting Pearson...")
-	config.PearsonDupeThreshold, err = trial.SuggestFloat("Pearson", 0.99, 0.99999)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting Spearman...")
+		config.SpearmanDupeThreshold, err = trial.SuggestFloat("Spearman", 0.75, 0.85)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 
-	fmt.Println("Suggesting Spearman...")
-	config.SpearmanDupeThreshold, err = trial.SuggestFloat("Spearman", 0.75, 0.85)
-	if err != nil {
-		return 0, errors.New(err)
-	}
-
-	fmt.Println("Suggesting Kendall...")
-	config.KendallDupeThreshold, _ = trial.SuggestFloat("Kendall", 0.68, 0.72)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting Kendall...")
+		config.KendallDupeThreshold, _ = trial.SuggestFloat("Kendall", 0.68, 0.72)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 	/*config.RandomizedDependenceDupeThreshold, _ = trial.SuggestFloat("RDC", 0.5, 0.99999)
 	if err != nil {
 		return 0, errors.New(err)
 	}*/
 
-	fmt.Println("Suggesting Hoeffding...")
-	config.HoeffdingDupeThreshold, _ = trial.SuggestFloat("Hoeffding", 0.2, 0.6)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting Hoeffding...")
+		config.HoeffdingDupeThreshold, _ = trial.SuggestFloat("Hoeffding", 0.2, 0.6)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 
-	fmt.Println("Suggesting Blomqvist...")
-	config.BlomqvistDupeThreshold, _ = trial.SuggestFloat("Blomqvist", 0.6, 0.8)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting Blomqvist...")
+		config.BlomqvistDupeThreshold, _ = trial.SuggestFloat("Blomqvist", 0.6, 0.8)
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 	/*config.HoeffdingDupeThreshold, _ = trial.SuggestFloat("HoeffdingD1", 0.1, 0.99999)
 	if err != nil {
 		return 0, errors.New(err)
@@ -117,15 +138,17 @@ func objective(trial goptuna.Trial) (float64, error) {
 		allOrderedCombinationsOfMethodsAsStrings = append(allOrderedCombinationsOfMethodsAsStrings, strings.Join(combination, " "))
 	}
 
-	fmt.Println("Suggesting CorrelationMethodsOrderIndex...")
-	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfMethodsAsStrings)-1), 1.0)
-	if err != nil {
-		return 0, errors.New(err)
-	}
+	g.Go(func() error {
+		fmt.Println("Suggesting CorrelationMethodsOrderIndex...")
+		correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfMethodsAsStrings)-1), 1.0)
+		config.CorrelationMethodsOrder = allOrderedCombinationsOfMethodsAsStrings[int(correlationMethodIndex)]
+		if err != nil {
+			return errors.New(err)
+		}
+		return nil
+	})
 	//correlationMethodsOrder := append(config.StableOrderOfCorrelationMethods, allOrderedCombinationsOfMethodsAsStrings[int(correlationMethodIndex)])
 	//config.CorrelationMethodsOrder = strings.Join(correlationMethodsOrder, " ")
-
-	config.CorrelationMethodsOrder = allOrderedCombinationsOfMethodsAsStrings[int(correlationMethodIndex)]
 
 	//config.CorrelationMethodsOrder = "MI PearsonR SpearmanRho BootstrappedKendallTau BootstrappedBlomqvistBeta HoeffdingDRound1 HoeffdingDRound2"
 	//config.CorrelationMethodsOrder = "PearsonR SpearmanRho KendallTau HoeffdingD BlomqvistBeta"
@@ -136,6 +159,11 @@ func objective(trial goptuna.Trial) (float64, error) {
 	}
 
 	fmt.Println("Suggesting ended. Measure AUPRC...")
+
+	err = g.Wait()
+	if err != nil {
+		return 0, errors.New(err)
+	}
 
 	aurpcResult, err := auprc.MeasureAUPRC(config)
 	if err != nil {
