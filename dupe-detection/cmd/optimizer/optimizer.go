@@ -158,12 +158,12 @@ func objective(trial goptuna.Trial) (float64, error) {
 		return 0, errors.New(err)
 	}
 
-	fmt.Println("Suggesting ended. Measure AUPRC...")
-
 	err = g.Wait()
 	if err != nil {
 		return 0, errors.New(err)
 	}
+
+	fmt.Println("Suggesting ended. Measure AUPRC...")
 
 	aurpcResult, err := auprc.MeasureAUPRC(config)
 	if err != nil {
