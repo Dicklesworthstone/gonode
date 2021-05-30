@@ -30,6 +30,7 @@ var numberOfImagesToValidate = 0
 
 // objective defines the objective of the study - find out the best aurpc value
 func objective(trial goptuna.Trial) (float64, error) {
+	fmt.Println("Start objective...")
 	var err error
 	// Define the search space via Suggest APIs.
 	config := dupedetection.NewComputeConfig()
@@ -121,6 +122,8 @@ func objective(trial goptuna.Trial) (float64, error) {
 	if err != nil {
 		return 0, errors.New(err)
 	}
+
+	fmt.Println("Suggesting ended. Measure AUPRC...")
 
 	aurpcResult, err := auprc.MeasureAUPRC(config)
 	if err != nil {
