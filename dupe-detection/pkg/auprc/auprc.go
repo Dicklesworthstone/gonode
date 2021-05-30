@@ -528,8 +528,12 @@ func MeasureAUPRC(config dupedetection.ComputeConfig) (MeasureResult, error) {
 	Ytrue := mat.NewDense(len(predictedY), 1, predictedY)
 	Yscores := mat.NewDense(len(actualY), 1, actualY)
 	precision, recall, _ := metrics.PrecisionRecallCurve(Ytrue, Yscores, 1, nil)
-	sort.Float64s(recall)
-	auprcMetric := metrics.AUC(recall, precision)
+	auprcMetric := 0.0
+	if precision[0] != 0 {
+		sort.Float64s(recall)
+		auprcMetric = metrics.AUC(recall, precision)
+	}
+
 	fmt.Printf("\nAcross all near-duplicate and non-duplicate test images, precision is %v and the Area Under the Precision-Recall Curve (AUPRC) is %.3f\n", precision, auprcMetric)
 	return MeasureResult{
 		AUPRC:            auprcMetric,

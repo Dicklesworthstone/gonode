@@ -13,7 +13,7 @@ require (
 	github.com/kofalt/go-memoize v0.0.0-20200917044458-9b55a8d73e1c
 	github.com/kzahedi/goent v0.0.0-20190403094137-49773660fa36
 	github.com/mattn/go-sqlite3 v1.14.6
-	github.com/maxhora/goptuna v0.8.2-0.20210530183139-d69de9b77661
+	github.com/maxhora/goptuna v0.8.2-0.20210530194727-4786b288e321
 	github.com/montanaflynn/stats v0.6.5
 	github.com/pa-m/sklearn v0.0.0-20200711083454-beb861ee48b1
 	github.com/pastelnetwork/gonode/common v0.0.0
@@ -28,3 +28,5 @@ require (
 )
 
 replace github.com/pastelnetwork/gonode/common => ../common
+
+replace github.com/maxhora/goptuna => /Users/max/work/pastelnetworks/goptuna
