@@ -13,7 +13,7 @@ require (
 	github.com/kofalt/go-memoize v0.0.0-20200917044458-9b55a8d73e1c
 	github.com/kzahedi/goent v0.0.0-20190403094137-49773660fa36
 	github.com/mattn/go-sqlite3 v1.14.6
-	github.com/maxhora/goptuna v0.8.2-0.20210530171112-5f4b56449b74
+	github.com/maxhora/goptuna v0.8.2-0.20210530181029-10d42120ab14
 	github.com/montanaflynn/stats v0.6.5
 	github.com/pa-m/sklearn v0.0.0-20200711083454-beb861ee48b1
 	github.com/pastelnetwork/gonode/common v0.0.0
