@@ -29,4 +29,4 @@ require (
 
 replace github.com/pastelnetwork/gonode/common => ../common
 
-replace github.com/maxhora/goptuna => /Users/max/work/pastelnetworks/goptuna
+//replace github.com/maxhora/goptuna => /Users/max/work/pastelnetworks/goptuna
