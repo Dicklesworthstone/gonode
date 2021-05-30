@@ -52,19 +52,26 @@ func objective(trial goptuna.Trial) (float64, error) {
 		return 0, errors.New(err)
 	}
 
+	fmt.Println("Suggesting MIThreshold...")
+
 	config.MIThreshold, err = trial.SuggestFloat("MIThreshold", 5.2, 5.4)
 	if err != nil {
 		return 0, errors.New(err)
 	}
 
+	fmt.Println("Suggesting Pearson...")
 	config.PearsonDupeThreshold, err = trial.SuggestFloat("Pearson", 0.99, 0.99999)
 	if err != nil {
 		return 0, errors.New(err)
 	}
+
+	fmt.Println("Suggesting Spearman...")
 	config.SpearmanDupeThreshold, err = trial.SuggestFloat("Spearman", 0.75, 0.85)
 	if err != nil {
 		return 0, errors.New(err)
 	}
+
+	fmt.Println("Suggesting Kendall...")
 	config.KendallDupeThreshold, _ = trial.SuggestFloat("Kendall", 0.68, 0.72)
 	if err != nil {
 		return 0, errors.New(err)
@@ -73,10 +80,14 @@ func objective(trial goptuna.Trial) (float64, error) {
 	if err != nil {
 		return 0, errors.New(err)
 	}*/
+
+	fmt.Println("Suggesting Hoeffding...")
 	config.HoeffdingDupeThreshold, _ = trial.SuggestFloat("Hoeffding", 0.2, 0.6)
 	if err != nil {
 		return 0, errors.New(err)
 	}
+
+	fmt.Println("Suggesting Blomqvist...")
 	config.BlomqvistDupeThreshold, _ = trial.SuggestFloat("Blomqvist", 0.6, 0.8)
 	if err != nil {
 		return 0, errors.New(err)
@@ -106,6 +117,7 @@ func objective(trial goptuna.Trial) (float64, error) {
 		allOrderedCombinationsOfMethodsAsStrings = append(allOrderedCombinationsOfMethodsAsStrings, strings.Join(combination, " "))
 	}
 
+	fmt.Println("Suggesting CorrelationMethodsOrderIndex...")
 	correlationMethodIndex, err := trial.SuggestDiscreteFloat("CorrelationMethodsOrderIndex", 0, float64(len(allOrderedCombinationsOfMethodsAsStrings)-1), 1.0)
 	if err != nil {
 		return 0, errors.New(err)
