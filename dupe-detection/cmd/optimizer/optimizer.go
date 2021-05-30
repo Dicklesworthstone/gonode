@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/c-bata/goptuna"
 	"github.com/gitchander/permutation"
+	"github.com/maxhora/goptuna"
 	"gorm.io/driver/mysql"
 
-	"github.com/c-bata/goptuna/rdb.v2"
-	"github.com/c-bata/goptuna/tpe"
+	"github.com/maxhora/goptuna/rdb.v2"
+	"github.com/maxhora/goptuna/tpe"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 

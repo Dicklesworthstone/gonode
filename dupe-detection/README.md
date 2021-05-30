@@ -51,7 +51,7 @@ unzip test_corpus_opens_1.zip -d ./test_corpus
 
 # Pre-requisites
 
-`goptuna` cli tool executable should be downloaded from [the project's GitHub Releases](https://github.com/c-bata/goptuna/releases) page.
+`goptuna` cli tool executable should be downloaded from [the project's GitHub Releases](https://github.com/maxhora/goptuna/releases) page.
 
 # Workflow
 
