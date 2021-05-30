@@ -20,7 +20,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TaskResponseTinyCollection'
               example:
-              - id: n6Qn6TFM
+                - id: n6Qn6TFM
                 status: Task Started
                 ticket:
                   artist_name: Leonardo da Vinci
@@ -58,6 +58,44 @@ paths:
                   spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
                   youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
                 txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
+                - id: n6Qn6TFM
+                  status: Task Started
+                  ticket:
+                    artist_name: Leonardo da Vinci
+                    artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+                    artist_pastelid_passphrase: qwerasdf1234
+                    artist_website_url: https://www.leonardodavinci.net
+                    description: The Mona Lisa is an oil painting by Italian artist,
+                      inventor, and writer Leonardo da Vinci. Likely completed in 1506,
+                      the piece features a portrait of a seated woman set against an
+                      imaginary landscape.
+                    issued_copies: 1
+                    keywords: Renaissance, sfumato, portrait
+                    maximum_fee: 100
+                    name: Mona Lisa
+                    series_name: Famous artist
+                    spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
+                    youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
+                  txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
+                - id: n6Qn6TFM
+                  status: Task Started
+                  ticket:
+                    artist_name: Leonardo da Vinci
+                    artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+                    artist_pastelid_passphrase: qwerasdf1234
+                    artist_website_url: https://www.leonardodavinci.net
+                    description: The Mona Lisa is an oil painting by Italian artist,
+                      inventor, and writer Leonardo da Vinci. Likely completed in 1506,
+                      the piece features a portrait of a seated woman set against an
+                      imaginary landscape.
+                    issued_copies: 1
+                    keywords: Renaissance, sfumato, portrait
+                    maximum_fee: 100
+                    name: Mona Lisa
+                    series_name: Famous artist
+                    spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
+                    youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
+                  txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
         "500":
           description: Internal Server Error response.
           content:
@@ -154,8 +192,6 @@ paths:
               example:
                 id: n6Qn6TFM
                 states:
-                - date: 2006-01-02T15:04:05Z07:00
-                  status: Task Started
                 - date: 2006-01-02T15:04:05Z07:00
                   status: Task Started
                 - date: 2006-01-02T15:04:05Z07:00
@@ -262,41 +298,28 @@ paths:
               $ref: '#/components/schemas/UploadImageRequestBody'
             example:
               file:
-              - 86
-              - 101
-              - 108
-              - 32
-              - 118
-              - 111
-              - 108
-              - 117
-              - 112
-              - 116
-              - 97
-              - 116
-              - 101
-              - 109
-              - 32
-              - 112
-              - 114
-              - 111
-              - 118
-              - 105
-              - 100
-              - 101
-              - 110
-              - 116
-              - 32
-              - 100
-              - 111
-              - 108
-              - 111
-              - 114
-              - 105
-              - 98
-              - 117
-              - 115
-              - 46
+                - 82
+                - 101
+                - 114
+                - 117
+                - 109
+                - 32
+                - 118
+                - 111
+                - 108
+                - 117
+                - 112
+                - 116
+                - 97
+                - 116
+                - 101
+                - 32
+                - 110
+                - 105
+                - 104
+                - 105
+                - 108
+                - 46
       responses:
         "201":
           description: Created response.
@@ -327,8 +350,99 @@ paths:
                 id: 3F1FKVRR
                 message: Value of ID must be an integer
                 name: bad_request
+  /artworks/search/{term}:
+    get:
+      tags:
+        - artworks
+      summary: search artworks
+      description: Search artwork tickets
+      operationId: artworks#searchRequest
+      parameters:
+        - name: term
+          in: path
+          required: true
+          schema:
+            type: string
+            example: '{"name":"example","email":"mail@example.com"}'
+            format: json
+          example: '{"name":"example","email":"mail@example.com"}'
+      responses:
+        "101":
+          description: Switching Protocols response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtworkSearchResult'
+              example:
+                ticket:
+                  artist_height: Ea et qui minima excepturi qui assumenda.
+                  pastelID: Asperiores amet laboriosam libero tenetur vitae blanditiis.
+                  reg_fee: Minus nostrum ea veritatis sequi.
+                  reg_txid: Magnam ut eum eligendi velit sequi.
+                  signature: Maxime eveniet aut et ut cumque amet.
+                  type: Nihil quia dolore fugit aliquam totam.
+        "400":
+          description: Bad Request response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
+        "500":
+          description: Internal Server Error response.
+          content:
+            application/vnd.goa.error:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                id: 3F1FKVRR
+                message: Value of ID must be an integer
+                name: bad_request
 components:
   schemas:
+    ArtworkSearchResult:
+      type: object
+      properties:
+        ticket:
+          type: object
+          properties:
+            artist_height:
+              type: string
+              example: Qui aut ea sunt corrupti ex sit.
+            pastelID:
+              type: string
+              example: Voluptatem nemo eum aliquid vel.
+            reg_fee:
+              type: string
+              example: Ea magni.
+            reg_txid:
+              type: string
+              example: Nostrum occaecati quo deleniti.
+            signature:
+              type: string
+              example: Unde quod vel voluptatem error.
+            type:
+              type: string
+              default: art-act
+              example: Magni ex quia nihil autem et.
+          example:
+            artist_height: Velit cum voluptas ut mollitia incidunt aperiam.
+            pastelID: Est ea.
+            reg_fee: Et consectetur aliquid.
+            reg_txid: Saepe animi.
+            signature: Rerum impedit et et sit maxime voluptatum.
+            type: Sequi suscipit sint ut in.
+      example:
+        ticket:
+          artist_height: Qui qui esse qui.
+          pastelID: Enim eum enim.
+          reg_fee: Exercitationem placeat.
+          reg_txid: Voluptas omnis reiciendis quisquam voluptatem eum eaque.
+          signature: Voluptates numquam officiis rerum at.
+          type: Voluptate nostrum quidem.
     ArtworkTicket:
       type: object
       properties:
@@ -430,7 +544,7 @@ components:
         fault:
           type: boolean
           description: Is the error a server-side fault?
-          example: true
+          example: false
         id:
           type: string
           description: ID is a unique identifier for this particular occurrence of
@@ -448,7 +562,7 @@ components:
         temporary:
           type: boolean
           description: Is the error temporary?
-          example: false
+          example: true
         timeout:
           type: boolean
           description: Is the error a timeout?
@@ -614,10 +728,14 @@ components:
             $ref: '#/components/schemas/TaskState'
           description: List of states from the very beginning of the process
           example:
-          - date: 2006-01-02T15:04:05Z07:00
-            status: Task Started
-          - date: 2006-01-02T15:04:05Z07:00
-            status: Task Started
+            - date: 2006-01-02T15:04:05Z07:00
+              status: Task Started
+            - date: 2006-01-02T15:04:05Z07:00
+              status: Task Started
+            - date: 2006-01-02T15:04:05Z07:00
+              status: Task Started
+            - date: 2006-01-02T15:04:05Z07:00
+              status: Task Started
         status:
           type: string
           description: Status of the registration process
@@ -645,12 +763,14 @@ components:
       example:
         id: n6Qn6TFM
         states:
-        - date: 2006-01-02T15:04:05Z07:00
-          status: Task Started
-        - date: 2006-01-02T15:04:05Z07:00
-          status: Task Started
-        - date: 2006-01-02T15:04:05Z07:00
-          status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
         status: Task Started
         ticket:
           artist_name: Leonardo da Vinci
@@ -735,16 +855,34 @@ components:
       description: RegisterTasksResponseBody is the result type for an array of TaskResponse
         (tiny view)
       example:
-      - id: n6Qn6TFM
-        status: Task Started
-        ticket:
-          artist_name: Leonardo da Vinci
-          artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
-          artist_pastelid_passphrase: qwerasdf1234
-          artist_website_url: https://www.leonardodavinci.net
-          description: The Mona Lisa is an oil painting by Italian artist, inventor,
-            and writer Leonardo da Vinci. Likely completed in 1506, the piece features
-            a portrait of a seated woman set against an imaginary landscape.
+        - id: n6Qn6TFM
+          status: Task Started
+          ticket:
+            artist_name: Leonardo da Vinci
+            artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+            artist_pastelid_passphrase: qwerasdf1234
+            artist_website_url: https://www.leonardodavinci.net
+            description: The Mona Lisa is an oil painting by Italian artist, inventor,
+              and writer Leonardo da Vinci. Likely completed in 1506, the piece features
+              a portrait of a seated woman set against an imaginary landscape.
+            issued_copies: 1
+            keywords: Renaissance, sfumato, portrait
+            maximum_fee: 100
+            name: Mona Lisa
+            series_name: Famous artist
+            spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
+            youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
+          txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
+        - id: n6Qn6TFM
+          status: Task Started
+          ticket:
+            artist_name: Leonardo da Vinci
+            artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+            artist_pastelid_passphrase: qwerasdf1234
+            artist_website_url: https://www.leonardodavinci.net
+            description: The Mona Lisa is an oil painting by Italian artist, inventor,
+              and writer Leonardo da Vinci. Likely completed in 1506, the piece features
+              a portrait of a seated woman set against an imaginary landscape.
           issued_copies: 1
           keywords: Renaissance, sfumato, portrait
           maximum_fee: 100
@@ -806,83 +944,82 @@ components:
           type: string
           description: File to upload
           example:
-          - 83
-          - 117
-          - 110
-          - 116
-          - 32
-          - 97
-          - 99
-          - 99
-          - 117
-          - 115
-          - 97
-          - 110
-          - 116
-          - 105
-          - 117
-          - 109
-          - 32
-          - 105
-          - 112
-          - 115
-          - 117
-          - 109
-          - 32
-          - 116
-          - 111
-          - 116
-          - 97
-          - 109
-          - 32
-          - 101
-          - 115
-          - 116
-          - 32
-          - 117
-          - 110
-          - 100
-          - 101
-          - 46
+            - 69
+            - 115
+            - 116
+            - 32
+            - 118
+            - 101
+            - 108
+            - 105
+            - 116
+            - 32
+            - 109
+            - 105
+            - 110
+            - 117
+            - 115
+            - 32
+            - 113
+            - 117
+            - 105
+            - 32
+            - 111
+            - 99
+            - 99
+            - 97
+            - 101
+            - 99
+            - 97
+            - 116
+            - 105
+            - 32
+            - 118
+            - 101
+            - 114
+            - 105
+            - 116
+            - 97
+            - 116
+            - 105
+            - 115
+            - 46
           format: binary
         filename:
           type: string
           description: For internal use
       example:
         file:
-        - 69
-        - 105
-        - 117
-        - 115
-        - 32
-        - 99
-        - 117
-        - 109
-        - 32
-        - 104
-        - 97
-        - 114
-        - 117
-        - 109
-        - 32
-        - 105
-        - 108
-        - 108
-        - 117
-        - 109
-        - 32
-        - 118
-        - 101
-        - 108
-        - 105
-        - 116
-        - 32
-        - 118
-        - 101
-        - 110
-        - 105
-        - 97
-        - 109
+          - 69
+          - 116
+          - 32
+          - 101
+          - 114
+          - 114
+          - 111
+          - 114
+          - 32
+          - 101
+          - 105
+          - 117
+          - 115
+          - 32
+          - 101
+          - 120
+          - 99
+          - 101
+          - 112
+          - 116
+          - 117
+          - 114
+          - 105
+          - 32
+          - 101
+          - 116
+          - 32
+          - 115
+          - 101
+          - 100
         - 46
       required:
       - file

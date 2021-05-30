@@ -98,6 +98,19 @@ type UploadImageResponseBody struct {
 	ExpiresIn string `form:"expires_in" json:"expires_in" xml:"expires_in"`
 }
 
+// SearchRequestResponseBody is the type of the "artworks" service
+// "searchRequest" endpoint HTTP response body.
+type SearchRequestResponseBody struct {
+	Ticket *struct {
+		Type         string  `form:"type" json:"type" xml:"type"`
+		PastelID     *string `form:"pastelID" json:"pastelID" xml:"pastelID"`
+		RegTxid      *string `form:"reg_txid" json:"reg_txid" xml:"reg_txid"`
+		ArtistHeight *string `form:"artist_height" json:"artist_height" xml:"artist_height"`
+		RegFee       *string `form:"reg_fee" json:"reg_fee" xml:"reg_fee"`
+		Signature    *string `form:"signature" json:"signature" xml:"signature"`
+	} `form:"ticket,omitempty" json:"ticket,omitempty" xml:"ticket,omitempty"`
+}
+
 // RegisterBadRequestResponseBody is the type of the "artworks" service
 // "register" endpoint HTTP response body for the "BadRequest" error.
 type RegisterBadRequestResponseBody struct {
@@ -265,6 +278,43 @@ type UploadImageInternalServerErrorResponseBody struct {
 	Fault bool `form:"fault" json:"fault" xml:"fault"`
 }
 
+// SearchRequestBadRequestResponseBody is the type of the "artworks" service
+// "searchRequest" endpoint HTTP response body for the "BadRequest" error.
+type SearchRequestBadRequestResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
+// SearchRequestInternalServerErrorResponseBody is the type of the "artworks"
+// service "searchRequest" endpoint HTTP response body for the
+// "InternalServerError" error.
+type SearchRequestInternalServerErrorResponseBody struct {
+	// Name is the name of this class of errors.
+	Name string `form:"name" json:"name" xml:"name"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID string `form:"id" json:"id" xml:"id"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message string `form:"message" json:"message" xml:"message"`
+	// Is the error temporary?
+	Temporary bool `form:"temporary" json:"temporary" xml:"temporary"`
+	// Is the error a timeout?
+	Timeout bool `form:"timeout" json:"timeout" xml:"timeout"`
+	// Is the error a server-side fault?
+	Fault bool `form:"fault" json:"fault" xml:"fault"`
+}
+
 // TaskStateResponseBody is used to define fields on response body types.
 type TaskStateResponseBody struct {
 	// Date of the status creation
@@ -399,6 +449,36 @@ func NewUploadImageResponseBody(res *artworksviews.ImageView) *UploadImageRespon
 	return body
 }
 
+// NewSearchRequestResponseBody builds the HTTP response body from the result
+// of the "searchRequest" endpoint of the "artworks" service.
+func NewSearchRequestResponseBody(res *artworks.ArtworkSearchResult) *SearchRequestResponseBody {
+	body := &SearchRequestResponseBody{}
+	if res.Ticket != nil {
+		body.Ticket = &struct {
+			Type         string  `form:"type" json:"type" xml:"type"`
+			PastelID     *string `form:"pastelID" json:"pastelID" xml:"pastelID"`
+			RegTxid      *string `form:"reg_txid" json:"reg_txid" xml:"reg_txid"`
+			ArtistHeight *string `form:"artist_height" json:"artist_height" xml:"artist_height"`
+			RegFee       *string `form:"reg_fee" json:"reg_fee" xml:"reg_fee"`
+			Signature    *string `form:"signature" json:"signature" xml:"signature"`
+		}{
+			Type:         res.Ticket.Type,
+			PastelID:     res.Ticket.PastelID,
+			RegTxid:      res.Ticket.RegTxid,
+			ArtistHeight: res.Ticket.ArtistHeight,
+			RegFee:       res.Ticket.RegFee,
+			Signature:    res.Ticket.Signature,
+		}
+		{
+			var zero string
+			if body.Ticket.Type == zero {
+				body.Ticket.Type = "art-act"
+			}
+		}
+	}
+	return body
+}
+
 // NewRegisterBadRequestResponseBody builds the HTTP response body from the
 // result of the "register" endpoint of the "artworks" service.
 func NewRegisterBadRequestResponseBody(res *goa.ServiceError) *RegisterBadRequestResponseBody {
@@ -527,6 +607,35 @@ func NewUploadImageInternalServerErrorResponseBody(res *goa.ServiceError) *Uploa
 	return body
 }
 
+// NewSearchRequestBadRequestResponseBody builds the HTTP response body from
+// the result of the "searchRequest" endpoint of the "artworks" service.
+func NewSearchRequestBadRequestResponseBody(res *goa.ServiceError) *SearchRequestBadRequestResponseBody {
+	body := &SearchRequestBadRequestResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
+	}
+	return body
+}
+
+// NewSearchRequestInternalServerErrorResponseBody builds the HTTP response
+// body from the result of the "searchRequest" endpoint of the "artworks"
+// service.
+func NewSearchRequestInternalServerErrorResponseBody(res *goa.ServiceError) *SearchRequestInternalServerErrorResponseBody {
+	body := &SearchRequestInternalServerErrorResponseBody{
+		Name:      res.Name,
+		ID:        res.ID,
+		Message:   res.Message,
+		Temporary: res.Temporary,
+		Timeout:   res.Timeout,
+		Fault:     res.Fault,
+	}
+	return body
+}
+
 // NewRegisterPayload builds a artworks service register endpoint payload.
 func NewRegisterPayload(body *RegisterRequestBody) *artworks.RegisterPayload {
 	v := &artworks.RegisterPayload{
@@ -572,6 +681,15 @@ func NewUploadImagePayload(body *UploadImageRequestBody) *artworks.UploadImagePa
 		Bytes:    body.Bytes,
 		Filename: body.Filename,
 	}
+
+	return v
+}
+
+// NewSearchRequestArtworkSearchRequestPayload builds a artworks service
+// searchRequest endpoint payload.
+func NewSearchRequestArtworkSearchRequestPayload(term string) *artworks.ArtworkSearchRequestPayload {
+	v := &artworks.ArtworkSearchRequestPayload{}
+	v.Term = &term
 
 	return v
 }

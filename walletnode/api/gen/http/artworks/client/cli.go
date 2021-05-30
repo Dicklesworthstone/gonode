@@ -163,7 +163,7 @@ func BuildUploadImagePayload(artworksUploadImageBody string) (*artworks.UploadIm
 	{
 		err = json.Unmarshal([]byte(artworksUploadImageBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"file\": \"VmVsIHZvbHVwdGF0ZW0gcHJvdmlkZW50IGRvbG9yaWJ1cy4=\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"file\": \"UmVydW0gdm9sdXB0YXRlIG5paGlsLg==\"\n   }'")
 		}
 		if body.Bytes == nil {
 			err = goa.MergeErrors(err, goa.MissingFieldError("file", "body"))
@@ -176,6 +176,25 @@ func BuildUploadImagePayload(artworksUploadImageBody string) (*artworks.UploadIm
 		Bytes:    body.Bytes,
 		Filename: body.Filename,
 	}
+
+	return v, nil
+}
+
+// BuildSearchRequestPayload builds the payload for the artworks searchRequest
+// endpoint from CLI flags.
+func BuildSearchRequestPayload(artworksSearchRequestTerm string) (*artworks.ArtworkSearchRequestPayload, error) {
+	var err error
+	var term string
+	{
+		term = artworksSearchRequestTerm
+		err = goa.MergeErrors(err, goa.ValidateFormat("term", term, goa.FormatJSON))
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	v := &artworks.ArtworkSearchRequestPayload{}
+	v.Term = &term
 
 	return v, nil
 }

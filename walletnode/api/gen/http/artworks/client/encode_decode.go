@@ -524,6 +524,108 @@ func DecodeUploadImageResponse(decoder func(*http.Response) goahttp.Decoder, res
 	}
 }
 
+// BuildSearchRequestRequest instantiates a HTTP request object with method and
+// path set to call the "artworks" service "searchRequest" endpoint
+func (c *Client) BuildSearchRequestRequest(ctx context.Context, v interface{}) (*http.Request, error) {
+	var (
+		term string
+	)
+	{
+		p, ok := v.(*artworks.ArtworkSearchRequestPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("artworks", "searchRequest", "*artworks.ArtworkSearchRequestPayload", v)
+		}
+		if p.Term != nil {
+			term = *p.Term
+		}
+	}
+	scheme := c.scheme
+	switch c.scheme {
+	case "http":
+		scheme = "ws"
+	case "https":
+		scheme = "wss"
+	}
+	u := &url.URL{Scheme: scheme, Host: c.host, Path: SearchRequestArtworksPath(term)}
+	req, err := http.NewRequest("GET", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("artworks", "searchRequest", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// DecodeSearchRequestResponse returns a decoder for responses returned by the
+// artworks searchRequest endpoint. restoreBody controls whether the response
+// body should be restored after having been read.
+// DecodeSearchRequestResponse may return the following errors:
+//	- "BadRequest" (type *goa.ServiceError): http.StatusBadRequest
+//	- "InternalServerError" (type *goa.ServiceError): http.StatusInternalServerError
+//	- error: internal error
+func DecodeSearchRequestResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (interface{}, error) {
+	return func(resp *http.Response) (interface{}, error) {
+		if restoreBody {
+			b, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusCreated:
+			var (
+				body SearchRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("artworks", "searchRequest", err)
+			}
+			res := NewSearchRequestArtworkSearchResultCreated(&body)
+			return res, nil
+		case http.StatusBadRequest:
+			var (
+				body SearchRequestBadRequestResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("artworks", "searchRequest", err)
+			}
+			err = ValidateSearchRequestBadRequestResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("artworks", "searchRequest", err)
+			}
+			return nil, NewSearchRequestBadRequest(&body)
+		case http.StatusInternalServerError:
+			var (
+				body SearchRequestInternalServerErrorResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("artworks", "searchRequest", err)
+			}
+			err = ValidateSearchRequestInternalServerErrorResponseBody(&body)
+			if err != nil {
+				return nil, goahttp.ErrValidationError("artworks", "searchRequest", err)
+			}
+			return nil, NewSearchRequestInternalServerError(&body)
+		default:
+			body, _ := ioutil.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("artworks", "searchRequest", resp.StatusCode, string(body))
+		}
+	}
+}
+
 // unmarshalTaskStateResponseBodyToArtworksviewsTaskStateView builds a value of
 // type *artworksviews.TaskStateView from a value of type
 // *TaskStateResponseBody.

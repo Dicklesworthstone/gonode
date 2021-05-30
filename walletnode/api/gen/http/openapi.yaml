@@ -160,7 +160,35 @@ paths:
           schema:
             $ref: '#/definitions/ArtworksUploadImageInternalServerErrorResponseBody'
       schemes:
-      - http
+        - http
+  /artworks/search/{term}:
+    get:
+      tags:
+        - artworks
+      summary: search artworks
+      description: Search artwork tickets
+      operationId: artworks#searchRequest
+      parameters:
+        - name: term
+          in: path
+          required: true
+          type: string
+          format: json
+      responses:
+        "101":
+          description: Switching Protocols response.
+          schema:
+            $ref: '#/definitions/ArtworksSearchRequestResponseBody'
+        "400":
+          description: Bad Request response.
+          schema:
+            $ref: '#/definitions/ArtworksSearchRequestBadRequestResponseBody'
+        "500":
+          description: Internal Server Error response.
+          schema:
+            $ref: '#/definitions/ArtworksSearchRequestInternalServerErrorResponseBody'
+      schemes:
+        - ws
 definitions:
   ArtworkTicketResponse:
     title: ArtworkTicketResponse
@@ -361,7 +389,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -390,7 +418,7 @@ definitions:
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
+      temporary: false
       timeout: false
     required:
     - name
@@ -406,7 +434,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -424,19 +452,19 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: register_InternalServerError_response_body result type (default view)
     example:
       fault: true
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
-      timeout: false
+      temporary: false
+      timeout: true
     required:
     - name
     - id
@@ -600,7 +628,7 @@ definitions:
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: true
-      timeout: false
+      timeout: true
     required:
     - name
     - id
@@ -615,7 +643,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -644,8 +672,8 @@ definitions:
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: true
-      timeout: true
+      temporary: false
+      timeout: false
     required:
     - name
     - id
@@ -669,10 +697,12 @@ definitions:
           $ref: '#/definitions/TaskStateResponseBody'
         description: List of states from the very beginning of the process
         example:
-        - date: 2006-01-02T15:04:05Z07:00
-          status: Task Started
-        - date: 2006-01-02T15:04:05Z07:00
-          status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
       status:
         type: string
         description: Status of the registration process
@@ -700,10 +730,6 @@ definitions:
     example:
       id: n6Qn6TFM
       states:
-      - date: 2006-01-02T15:04:05Z07:00
-        status: Task Started
-      - date: 2006-01-02T15:04:05Z07:00
-        status: Task Started
       - date: 2006-01-02T15:04:05Z07:00
         status: Task Started
       - date: 2006-01-02T15:04:05Z07:00
@@ -736,7 +762,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -758,16 +784,16 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: registerTaskState_InternalServerError_response_body result type (default
       view)
     example:
-      fault: true
+      fault: false
       id: 123abc
       message: parameter 'p' must be an integer
       name: bad_request
-      temporary: false
-      timeout: false
+      temporary: true
+      timeout: true
     required:
     - name
     - id
@@ -800,11 +826,11 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: registerTaskState_NotFound_response_body result type (default view)
     example:
       fault: false
@@ -856,7 +882,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: false
+        example: true
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -874,7 +900,7 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: false
+        example: true
       timeout:
         type: boolean
         description: Is the error a timeout?
@@ -889,12 +915,144 @@ definitions:
       temporary: false
       timeout: true
     required:
-    - name
-    - id
-    - message
-    - temporary
-    - timeout
-    - fault
+      - name
+      - id
+      - message
+      - temporary
+      - timeout
+      - fault
+  ArtworksSearchRequestBadRequestResponseBody:
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+    type: object
+    properties:
+      fault:
+        type: boolean
+        description: Is the error a server-side fault?
+        example: false
+      id:
+        type: string
+        description: ID is a unique identifier for this particular occurrence of the
+          problem.
+        example: 123abc
+      message:
+        type: string
+        description: Message is a human-readable explanation specific to this occurrence
+          of the problem.
+        example: parameter 'p' must be an integer
+      name:
+        type: string
+        description: Name is the name of this class of errors.
+        example: bad_request
+      temporary:
+        type: boolean
+        description: Is the error temporary?
+        example: true
+      timeout:
+        type: boolean
+        description: Is the error a timeout?
+        example: true
+    description: searchRequest_BadRequest_response_body result type (default view)
+    example:
+      fault: true
+      id: 123abc
+      message: parameter 'p' must be an integer
+      name: bad_request
+      temporary: true
+      timeout: true
+    required:
+      - name
+      - id
+      - message
+      - temporary
+      - timeout
+      - fault
+  ArtworksSearchRequestInternalServerErrorResponseBody:
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
+    type: object
+    properties:
+      fault:
+        type: boolean
+        description: Is the error a server-side fault?
+        example: false
+      id:
+        type: string
+        description: ID is a unique identifier for this particular occurrence of the
+          problem.
+        example: 123abc
+      message:
+        type: string
+        description: Message is a human-readable explanation specific to this occurrence
+          of the problem.
+        example: parameter 'p' must be an integer
+      name:
+        type: string
+        description: Name is the name of this class of errors.
+        example: bad_request
+      temporary:
+        type: boolean
+        description: Is the error temporary?
+        example: true
+      timeout:
+        type: boolean
+        description: Is the error a timeout?
+        example: true
+    description: searchRequest_InternalServerError_response_body result type (default
+      view)
+    example:
+      fault: true
+      id: 123abc
+      message: parameter 'p' must be an integer
+      name: bad_request
+      temporary: true
+      timeout: false
+    required:
+      - name
+      - id
+      - message
+      - temporary
+      - timeout
+      - fault
+  ArtworksSearchRequestResponseBody:
+    title: ArtworksSearchRequestResponseBody
+    type: object
+    properties:
+      ticket:
+        type: object
+        properties:
+          artist_height:
+            type: string
+            example: Quisquam accusamus quia deserunt qui.
+          pastelID:
+            type: string
+            example: Est ipsam maxime eveniet culpa non ea.
+          reg_fee:
+            type: string
+            example: Ipsa perspiciatis.
+          reg_txid:
+            type: string
+            example: Voluptas ut eaque.
+          signature:
+            type: string
+            example: Iste accusantium.
+          type:
+            type: string
+            default: art-act
+            example: Eveniet ut expedita cumque quam est.
+        example:
+          artist_height: Saepe consequatur repudiandae.
+          pastelID: Quia eius eaque.
+          reg_fee: Natus odit consequatur assumenda saepe laboriosam unde.
+          reg_txid: Illum qui consequatur labore.
+          signature: In non.
+          type: Eius recusandae et.
+    example:
+      ticket:
+        artist_height: Aut voluptatem dolor.
+        pastelID: Ut rem.
+        reg_fee: Possimus dolorem ut veritatis vitae eum magni.
+        reg_txid: Fugiat dolorum quaerat aut et nesciunt sit.
+        signature: Mollitia fugiat.
+        type: Commodi eveniet aut accusamus vitae.
   ArtworksTaskResponseTinyCollection:
     title: 'Mediatype identifier: application/vnd.artwork.register.task; type=collection;
       view=tiny'
@@ -904,10 +1062,8 @@ definitions:
     description: ArtworksTaskResponseTinyCollection is the result type for an array
       of TaskResponseTiny (default view)
     example:
-    - id: n6Qn6TFM
+      - id: n6Qn6TFM
       states:
-      - date: 2006-01-02T15:04:05Z07:00
-        status: Task Started
       - date: 2006-01-02T15:04:05Z07:00
         status: Task Started
       - date: 2006-01-02T15:04:05Z07:00
@@ -935,8 +1091,6 @@ definitions:
         status: Task Started
       - date: 2006-01-02T15:04:05Z07:00
         status: Task Started
-      - date: 2006-01-02T15:04:05Z07:00
-        status: Task Started
       status: Task Started
       ticket:
         artist_name: Leonardo da Vinci
@@ -954,31 +1108,52 @@ definitions:
         spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
         youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
       txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
-    - id: n6Qn6TFM
-      states:
-      - date: 2006-01-02T15:04:05Z07:00
+      - id: n6Qn6TFM
+        states:
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
         status: Task Started
-      - date: 2006-01-02T15:04:05Z07:00
+        ticket:
+          artist_name: Leonardo da Vinci
+          artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+          artist_pastelid_passphrase: qwerasdf1234
+          artist_website_url: https://www.leonardodavinci.net
+          description: The Mona Lisa is an oil painting by Italian artist, inventor,
+            and writer Leonardo da Vinci. Likely completed in 1506, the piece features
+            a portrait of a seated woman set against an imaginary landscape.
+          issued_copies: 1
+          keywords: Renaissance, sfumato, portrait
+          maximum_fee: 100
+          name: Mona Lisa
+          series_name: Famous artist
+          spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
+          youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
+        txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
+      - id: n6Qn6TFM
+        states:
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
+          - date: 2006-01-02T15:04:05Z07:00
+            status: Task Started
         status: Task Started
-      - date: 2006-01-02T15:04:05Z07:00
-        status: Task Started
-      status: Task Started
-      ticket:
-        artist_name: Leonardo da Vinci
-        artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
-        artist_pastelid_passphrase: qwerasdf1234
-        artist_website_url: https://www.leonardodavinci.net
-        description: The Mona Lisa is an oil painting by Italian artist, inventor,
-          and writer Leonardo da Vinci. Likely completed in 1506, the piece features
-          a portrait of a seated woman set against an imaginary landscape.
-        issued_copies: 1
-        keywords: Renaissance, sfumato, portrait
-        maximum_fee: 100
-        name: Mona Lisa
-        series_name: Famous artist
-        spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
-        youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
-      txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
+        ticket:
+          artist_name: Leonardo da Vinci
+          artist_pastelid: jXYJud3rmrR1Sk2scvR47N4E4J5Vv48uCC6se2nzHrBRdjaKj3ybPoi1Y2VVoRqi1GnQrYKjSxQAC7NBtvtEdS
+          artist_pastelid_passphrase: qwerasdf1234
+          artist_website_url: https://www.leonardodavinci.net
+          description: The Mona Lisa is an oil painting by Italian artist, inventor,
+            and writer Leonardo da Vinci. Likely completed in 1506, the piece features
+            a portrait of a seated woman set against an imaginary landscape.
+          issued_copies: 1
+          keywords: Renaissance, sfumato, portrait
+          maximum_fee: 100
+          name: Mona Lisa
+          series_name: Famous artist
+          spendable_address: PtiqRXn2VQwBjp1K8QXR2uW2w2oZ3Ns7N6j
+          youtube_url: https://www.youtube.com/watch?v=0xl6Ufo4ZX0
+        txid: 576e7b824634a488a2f0baacf5a53b237d883029f205df25b300b87c8877ab58
   ArtworksUploadImageBadRequestResponseBody:
     title: 'Mediatype identifier: application/vnd.goa.error; view=default'
     type: object
@@ -986,7 +1161,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1008,7 +1183,7 @@ definitions:
       timeout:
         type: boolean
         description: Is the error a timeout?
-        example: false
+        example: true
     description: uploadImage_BadRequest_response_body result type (default view)
     example:
       fault: true
@@ -1031,7 +1206,7 @@ definitions:
       fault:
         type: boolean
         description: Is the error a server-side fault?
-        example: true
+        example: false
       id:
         type: string
         description: ID is a unique identifier for this particular occurrence of the
@@ -1049,7 +1224,7 @@ definitions:
       temporary:
         type: boolean
         description: Is the error temporary?
-        example: true
+        example: false
       timeout:
         type: boolean
         description: Is the error a timeout?
@@ -1062,7 +1237,7 @@ definitions:
       message: parameter 'p' must be an integer
       name: bad_request
       temporary: true
-      timeout: false
+      timeout: true
     required:
     - name
     - id
@@ -1078,82 +1253,72 @@ definitions:
         type: string
         description: File to upload
         example:
-        - 73
-        - 112
-        - 115
-        - 97
-        - 32
-        - 113
-        - 117
-        - 111
-        - 115
-        - 32
-        - 111
-        - 109
-        - 110
-        - 105
-        - 115
-        - 32
-        - 114
-        - 101
-        - 112
-        - 114
-        - 101
-        - 104
-        - 101
-        - 110
-        - 100
-        - 101
-        - 114
-        - 105
-        - 116
-        - 32
-        - 100
-        - 111
-        - 108
-        - 111
-        - 114
-        - 105
-        - 98
-        - 117
-        - 115
-        - 46
+          - 84
+          - 111
+          - 116
+          - 97
+          - 109
+          - 32
+          - 101
+          - 97
+          - 113
+          - 117
+          - 101
+          - 32
+          - 105
+          - 100
+          - 46
         format: byte
       filename:
         type: string
         description: For internal use
     example:
       file:
-      - 77
-      - 111
-      - 100
-      - 105
-      - 32
-      - 110
-      - 105
-      - 115
-      - 105
-      - 32
-      - 101
-      - 111
-      - 115
-      - 32
-      - 98
-      - 108
-      - 97
-      - 110
-      - 100
-      - 105
-      - 116
-      - 105
-      - 105
-      - 115
-      - 32
-      - 101
-      - 105
-      - 117
-      - 115
-      - 46
+        - 69
+        - 105
+        - 117
+        - 115
+        - 32
+        - 105
+        - 109
+        - 112
+        - 101
+        - 100
+        - 105
+        - 116
+        - 32
+        - 116
+        - 101
+        - 110
+        - 101
+        - 116
+        - 117
+        - 114
+        - 32
+        - 104
+        - 97
+        - 114
+        - 117
+        - 109
+        - 32
+        - 109
+        - 111
+        - 108
+        - 101
+        - 115
+        - 116
+        - 105
+        - 97
+        - 115
+        - 32
+        - 116
+        - 101
+        - 109
+        - 112
+        - 111
+        - 114
+        - 101
+        - 46
     required:
     - file
   ArtworksUploadImageResponseBody:

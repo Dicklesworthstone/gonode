@@ -119,6 +119,21 @@ var _ = Service("artworks", func() {
 			Response(StatusCreated)
 		})
 	})
+
+	Method("searchRequest", func() {
+		Description("Search artwork tickets")
+		Meta("swagger:summary", "search artworks")
+
+		Payload(ArtworkSearchRequestPayload)
+		StreamingResult(ArtworkSearchResult)
+
+		HTTP(func() {
+			GET("/search/{term}")
+			Response("BadRequest", StatusBadRequest)
+			Response("InternalServerError", StatusInternalServerError)
+			Response(StatusCreated)
+		})
+	})
 })
 
 // ArtworkTicket is artwork register payload.
@@ -306,4 +321,87 @@ var RegisterTaskPayload = Type("RegisterTaskPayload", func() {
 		Example("n6Qn6TFM")
 	})
 	Required("taskId")
+})
+
+// ArtworkSearchRequestPayload - query string
+var ArtworkSearchRequestPayload = Type("ArtworkSearchRequestPayload", func() {
+	Description("Request in JSON forma")
+	Attribute("term", String, func() {
+		Format(FormatJSON)
+	})
+
+})
+
+//  ArtworkSearchRequestParams - search params
+//
+var ArtworkSearchRequestParams = Type("ArtworkSearchRequestParams", func() {
+	Description("Encoded JSON to struct")
+	Attribute("artist", String, func() {
+		Description("artist-pastel-id")
+		MinLength(1)
+		MaxLength(256)
+	})
+	Attribute("blocknum", ArrayOf(Int), func() {
+		Description("min_block <= art activation ticket txid <= max_block")
+		MinLength(1)
+		MaxLength(2)
+	})
+	Attribute("copies", ArrayOf(Int), func() {
+		Description("min_block <= art activation ticket txid <= max_block")
+		MinLength(1)
+		MaxLength(2)
+	})
+	Attribute("rare", ArrayOf(Int), func() {
+		Description("min_block <= art activation ticket txid <= max_block")
+		MinLength(1)
+		MaxLength(2)
+	})
+	Attribute("nsfw", ArrayOf(Int), func() {
+		Description("min_block <= art activation ticket txid <= max_block")
+		MinLength(1)
+		MaxLength(2)
+	})
+	Attribute("fuzzy", func() {
+		Attribute("artist", String, func() {
+			Description("search for matches in ticket's field - artist_name")
+			MaxLength(256)
+		})
+		Attribute("art", String, func() {
+			Description(" search for matches in ticket's field - artwork_title")
+			MaxLength(256)
+		})
+
+		Attribute("series", String, func() {
+			Description("search for matches in ticket's field - artwork_series_name")
+			MaxLength(256)
+		})
+		Attribute("keyword", String, func() {
+			Description("search for matches in ticket's field - artwork_keyword_set")
+			MaxLength(256)
+		})
+		Attribute("desc", String, func() {
+			Description("earch for matches in ticket's field - artist_written_statement")
+			MaxLength(1024)
+		})
+	})
+	Attribute("limit", Int, func() {
+		Description("max number of art to returns")
+		Default(10)
+		Minimum(1)
+		Maximum(1000)
+	})
+})
+
+var ArtworkSearchResult = Type("ArtworkSearchResult", func() {
+	Description("List activated ticket")
+	Attribute("ticket", func() {
+		Attribute("type", String, func() {
+			Default("art-act")
+		})
+		Attribute("pastelID", String)
+		Attribute("reg_txid", String)
+		Attribute("artist_height", String)
+		Attribute("reg_fee", String)
+		Attribute("signature", String)
+	})
 })

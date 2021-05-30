@@ -363,6 +363,68 @@ func EncodeUploadImageError(encoder func(context.Context, http.ResponseWriter) g
 	}
 }
 
+// DecodeSearchRequestRequest returns a decoder for requests sent to the
+// artworks searchRequest endpoint.
+func DecodeSearchRequestRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			term string
+			err  error
+
+			params = mux.Vars(r)
+		)
+		term = params["term"]
+		err = goa.MergeErrors(err, goa.ValidateFormat("term", term, goa.FormatJSON))
+
+		if err != nil {
+			return nil, err
+		}
+		payload := NewSearchRequestArtworkSearchRequestPayload(term)
+
+		return payload, nil
+	}
+}
+
+// EncodeSearchRequestError returns an encoder for errors returned by the
+// searchRequest artworks endpoint.
+func EncodeSearchRequestError(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder, formatter func(err error) goahttp.Statuser) func(context.Context, http.ResponseWriter, error) error {
+	encodeError := goahttp.ErrorEncoder(encoder, formatter)
+	return func(ctx context.Context, w http.ResponseWriter, v error) error {
+		en, ok := v.(ErrorNamer)
+		if !ok {
+			return encodeError(ctx, w, v)
+		}
+		switch en.ErrorName() {
+		case "BadRequest":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewSearchRequestBadRequestResponseBody(res)
+			}
+			w.Header().Set("goa-error", "BadRequest")
+			w.WriteHeader(http.StatusBadRequest)
+			return enc.Encode(body)
+		case "InternalServerError":
+			res := v.(*goa.ServiceError)
+			enc := encoder(ctx, w)
+			var body interface{}
+			if formatter != nil {
+				body = formatter(res)
+			} else {
+				body = NewSearchRequestInternalServerErrorResponseBody(res)
+			}
+			w.Header().Set("goa-error", "InternalServerError")
+			w.WriteHeader(http.StatusInternalServerError)
+			return enc.Encode(body)
+		default:
+			return encodeError(ctx, w, v)
+		}
+	}
+}
+
 // marshalArtworksviewsTaskStateViewToTaskStateResponseBody builds a value of
 // type *TaskStateResponseBody from a value of type
 // *artworksviews.TaskStateView.

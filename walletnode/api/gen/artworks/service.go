@@ -26,6 +26,8 @@ type Service interface {
 	RegisterTasks(context.Context) (res TaskCollection, err error)
 	// Upload the image that is used when registering a new artwork.
 	UploadImage(context.Context, *UploadImagePayload) (res *Image, err error)
+	// Search artwork tickets
+	SearchRequest(context.Context, *ArtworkSearchRequestPayload, SearchRequestServerStream) (err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -36,7 +38,7 @@ const ServiceName = "artworks"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [5]string{"register", "registerTaskState", "registerTask", "registerTasks", "uploadImage"}
+var MethodNames = [6]string{"register", "registerTaskState", "registerTask", "registerTasks", "uploadImage", "searchRequest"}
 
 // RegisterTaskStateServerStream is the interface a "registerTaskState"
 // endpoint server stream must satisfy.
@@ -52,6 +54,22 @@ type RegisterTaskStateServerStream interface {
 type RegisterTaskStateClientStream interface {
 	// Recv reads instances of "TaskState" from the stream.
 	Recv() (*TaskState, error)
+}
+
+// SearchRequestServerStream is the interface a "searchRequest" endpoint server
+// stream must satisfy.
+type SearchRequestServerStream interface {
+	// Send streams instances of "ArtworkSearchResult".
+	Send(*ArtworkSearchResult) error
+	// Close closes the stream.
+	Close() error
+}
+
+// SearchRequestClientStream is the interface a "searchRequest" endpoint client
+// stream must satisfy.
+type SearchRequestClientStream interface {
+	// Recv reads instances of "ArtworkSearchResult" from the stream.
+	Recv() (*ArtworkSearchResult, error)
 }
 
 // RegisterPayload is the payload type of the artworks service register method.
@@ -145,6 +163,25 @@ type Image struct {
 	ImageID string
 	// Image expiration
 	ExpiresIn string
+}
+
+// ArtworkSearchRequestPayload is the payload type of the artworks service
+// searchRequest method.
+type ArtworkSearchRequestPayload struct {
+	Term *string
+}
+
+// ArtworkSearchResult is the result type of the artworks service searchRequest
+// method.
+type ArtworkSearchResult struct {
+	Ticket *struct {
+		Type         string
+		PastelID     *string
+		RegTxid      *string
+		ArtistHeight *string
+		RegFee       *string
+		Signature    *string
+	}
 }
 
 // Ticket of the registration artwork

@@ -137,6 +137,12 @@ func (service *Artwork) UploadImage(_ context.Context, p *artworks.UploadImagePa
 	return res, nil
 }
 
+// SearchRequest
+func (service *Artwork) SearchRequest(_ context.Context, p *artworks.ArtworkSearchRequestPayload, stream artworks.SearchRequestServerStream) (err error) {
+
+	return
+}
+
 // Mount configures the mux to serve the artworks endpoints.
 func (service *Artwork) Mount(ctx context.Context, mux goahttp.Muxer) goahttp.Server {
 	endpoints := artworks.NewEndpoints(service)

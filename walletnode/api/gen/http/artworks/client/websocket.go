@@ -19,6 +19,7 @@ import (
 // streaming endpoints in "artworks" service.
 type ConnConfigurer struct {
 	RegisterTaskStateFn goahttp.ConnConfigureFunc
+	SearchRequestFn     goahttp.ConnConfigureFunc
 }
 
 // RegisterTaskStateClientStream implements the
@@ -28,11 +29,19 @@ type RegisterTaskStateClientStream struct {
 	conn *websocket.Conn
 }
 
+// SearchRequestClientStream implements the artworks.SearchRequestClientStream
+// interface.
+type SearchRequestClientStream struct {
+	// conn is the underlying websocket connection.
+	conn *websocket.Conn
+}
+
 // NewConnConfigurer initializes the websocket connection configurer function
 // with fn for all the streaming endpoints in "artworks" service.
 func NewConnConfigurer(fn goahttp.ConnConfigureFunc) *ConnConfigurer {
 	return &ConnConfigurer{
 		RegisterTaskStateFn: fn,
+		SearchRequestFn:     fn,
 	}
 }
 
@@ -57,5 +66,25 @@ func (s *RegisterTaskStateClientStream) Recv() (*artworks.TaskState, error) {
 		return rv, err
 	}
 	res := NewRegisterTaskStateTaskStateOK(&body)
+	return res, nil
+}
+
+// Recv reads instances of "artworks.ArtworkSearchResult" from the
+// "searchRequest" endpoint websocket connection.
+func (s *SearchRequestClientStream) Recv() (*artworks.ArtworkSearchResult, error) {
+	var (
+		rv   *artworks.ArtworkSearchResult
+		body SearchRequestResponseBody
+		err  error
+	)
+	err = s.conn.ReadJSON(&body)
+	if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+		s.conn.Close()
+		return rv, io.EOF
+	}
+	if err != nil {
+		return rv, err
+	}
+	res := NewSearchRequestArtworkSearchResultCreated(&body)
 	return res, nil
 }

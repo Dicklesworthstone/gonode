@@ -41,6 +41,10 @@ type Client struct {
 	// endpoint.
 	UploadImageDoer goahttp.Doer
 
+	// SearchRequest Doer is the HTTP client used to make requests to the
+	// searchRequest endpoint.
+	SearchRequestDoer goahttp.Doer
+
 	// CORS Doer is the HTTP client used to make requests to the  endpoint.
 	CORSDoer goahttp.Doer
 
@@ -80,6 +84,7 @@ func NewClient(
 		RegisterTaskDoer:      doer,
 		RegisterTasksDoer:     doer,
 		UploadImageDoer:       doer,
+		SearchRequestDoer:     doer,
 		CORSDoer:              doer,
 		RestoreResponseBody:   restoreBody,
 		scheme:                scheme,
@@ -128,8 +133,6 @@ func (c *Client) RegisterTaskState() goa.Endpoint {
 		}
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithCancel(ctx)
-		defer cancel()
-
 		conn, resp, err := c.dialer.DialContext(ctx, req.URL.String(), req.Header)
 		if err != nil {
 			if resp != nil {
@@ -213,5 +216,42 @@ func (c *Client) UploadImage(artworksUploadImageEncoderFn ArtworksUploadImageEnc
 			return nil, goahttp.ErrRequestError("artworks", "uploadImage", err)
 		}
 		return decodeResponse(resp)
+	}
+}
+
+// SearchRequest returns an endpoint that makes HTTP requests to the artworks
+// service searchRequest server.
+func (c *Client) SearchRequest() goa.Endpoint {
+	var (
+		decodeResponse = DecodeSearchRequestResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v interface{}) (interface{}, error) {
+		req, err := c.BuildSearchRequestRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithCancel(ctx)
+		conn, resp, err := c.dialer.DialContext(ctx, req.URL.String(), req.Header)
+		if err != nil {
+			if resp != nil {
+				return decodeResponse(resp)
+			}
+			return nil, goahttp.ErrRequestError("artworks", "searchRequest", err)
+		}
+		if c.configurer.SearchRequestFn != nil {
+			conn = c.configurer.SearchRequestFn(conn, cancel)
+		}
+		go func() {
+			<-ctx.Done()
+			conn.WriteControl(
+				websocket.CloseMessage,
+				websocket.FormatCloseMessage(websocket.CloseNormalClosure, "client closing connection"),
+				time.Now().Add(time.Second),
+			)
+			conn.Close()
+		}()
+		stream := &SearchRequestClientStream{conn: conn}
+		return stream, nil
 	}
 }

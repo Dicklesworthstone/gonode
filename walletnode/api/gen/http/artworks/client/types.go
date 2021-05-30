@@ -98,6 +98,19 @@ type UploadImageResponseBody struct {
 	ExpiresIn *string `form:"expires_in,omitempty" json:"expires_in,omitempty" xml:"expires_in,omitempty"`
 }
 
+// SearchRequestResponseBody is the type of the "artworks" service
+// "searchRequest" endpoint HTTP response body.
+type SearchRequestResponseBody struct {
+	Ticket *struct {
+		Type         *string `form:"type" json:"type" xml:"type"`
+		PastelID     *string `form:"pastelID" json:"pastelID" xml:"pastelID"`
+		RegTxid      *string `form:"reg_txid" json:"reg_txid" xml:"reg_txid"`
+		ArtistHeight *string `form:"artist_height" json:"artist_height" xml:"artist_height"`
+		RegFee       *string `form:"reg_fee" json:"reg_fee" xml:"reg_fee"`
+		Signature    *string `form:"signature" json:"signature" xml:"signature"`
+	} `form:"ticket,omitempty" json:"ticket,omitempty" xml:"ticket,omitempty"`
+}
+
 // RegisterBadRequestResponseBody is the type of the "artworks" service
 // "register" endpoint HTTP response body for the "BadRequest" error.
 type RegisterBadRequestResponseBody struct {
@@ -250,6 +263,43 @@ type UploadImageBadRequestResponseBody struct {
 // service "uploadImage" endpoint HTTP response body for the
 // "InternalServerError" error.
 type UploadImageInternalServerErrorResponseBody struct {
+	// Name is the name of this class of errors.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+	// Is the error temporary?
+	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
+	// Is the error a timeout?
+	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
+	// Is the error a server-side fault?
+	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
+}
+
+// SearchRequestBadRequestResponseBody is the type of the "artworks" service
+// "searchRequest" endpoint HTTP response body for the "BadRequest" error.
+type SearchRequestBadRequestResponseBody struct {
+	// Name is the name of this class of errors.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// ID is a unique identifier for this particular occurrence of the problem.
+	ID *string `form:"id,omitempty" json:"id,omitempty" xml:"id,omitempty"`
+	// Message is a human-readable explanation specific to this occurrence of the
+	// problem.
+	Message *string `form:"message,omitempty" json:"message,omitempty" xml:"message,omitempty"`
+	// Is the error temporary?
+	Temporary *bool `form:"temporary,omitempty" json:"temporary,omitempty" xml:"temporary,omitempty"`
+	// Is the error a timeout?
+	Timeout *bool `form:"timeout,omitempty" json:"timeout,omitempty" xml:"timeout,omitempty"`
+	// Is the error a server-side fault?
+	Fault *bool `form:"fault,omitempty" json:"fault,omitempty" xml:"fault,omitempty"`
+}
+
+// SearchRequestInternalServerErrorResponseBody is the type of the "artworks"
+// service "searchRequest" endpoint HTTP response body for the
+// "InternalServerError" error.
+type SearchRequestInternalServerErrorResponseBody struct {
 	// Name is the name of this class of errors.
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// ID is a unique identifier for this particular occurrence of the problem.
@@ -577,6 +627,66 @@ func NewUploadImageInternalServerError(body *UploadImageInternalServerErrorRespo
 	return v
 }
 
+// NewSearchRequestArtworkSearchResultCreated builds a "artworks" service
+// "searchRequest" endpoint result from a HTTP "Created" response.
+func NewSearchRequestArtworkSearchResultCreated(body *SearchRequestResponseBody) *artworks.ArtworkSearchResult {
+	v := &artworks.ArtworkSearchResult{}
+	if body.Ticket != nil {
+		v.Ticket = &struct {
+			Type         string
+			PastelID     *string
+			RegTxid      *string
+			ArtistHeight *string
+			RegFee       *string
+			Signature    *string
+		}{
+			PastelID:     body.Ticket.PastelID,
+			RegTxid:      body.Ticket.RegTxid,
+			ArtistHeight: body.Ticket.ArtistHeight,
+			RegFee:       body.Ticket.RegFee,
+			Signature:    body.Ticket.Signature,
+		}
+		if body.Ticket.Type != nil {
+			v.Ticket.Type = *body.Ticket.Type
+		}
+		if body.Ticket.Type == nil {
+			v.Ticket.Type = "art-act"
+		}
+	}
+
+	return v
+}
+
+// NewSearchRequestBadRequest builds a artworks service searchRequest endpoint
+// BadRequest error.
+func NewSearchRequestBadRequest(body *SearchRequestBadRequestResponseBody) *goa.ServiceError {
+	v := &goa.ServiceError{
+		Name:      *body.Name,
+		ID:        *body.ID,
+		Message:   *body.Message,
+		Temporary: *body.Temporary,
+		Timeout:   *body.Timeout,
+		Fault:     *body.Fault,
+	}
+
+	return v
+}
+
+// NewSearchRequestInternalServerError builds a artworks service searchRequest
+// endpoint InternalServerError error.
+func NewSearchRequestInternalServerError(body *SearchRequestInternalServerErrorResponseBody) *goa.ServiceError {
+	v := &goa.ServiceError{
+		Name:      *body.Name,
+		ID:        *body.ID,
+		Message:   *body.Message,
+		Temporary: *body.Temporary,
+		Timeout:   *body.Timeout,
+		Fault:     *body.Fault,
+	}
+
+	return v
+}
+
 // ValidateRegisterTaskStateResponseBody runs the validations defined on
 // RegisterTaskStateResponseBody
 func ValidateRegisterTaskStateResponseBody(body *RegisterTaskStateResponseBody) (err error) {
@@ -789,6 +899,54 @@ func ValidateUploadImageBadRequestResponseBody(body *UploadImageBadRequestRespon
 // ValidateUploadImageInternalServerErrorResponseBody runs the validations
 // defined on uploadImage_InternalServerError_response_body
 func ValidateUploadImageInternalServerErrorResponseBody(body *UploadImageInternalServerErrorResponseBody) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	if body.Temporary == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
+	}
+	if body.Timeout == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
+	}
+	if body.Fault == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
+	}
+	return
+}
+
+// ValidateSearchRequestBadRequestResponseBody runs the validations defined on
+// searchRequest_BadRequest_response_body
+func ValidateSearchRequestBadRequestResponseBody(body *SearchRequestBadRequestResponseBody) (err error) {
+	if body.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
+	}
+	if body.ID == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("id", "body"))
+	}
+	if body.Message == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("message", "body"))
+	}
+	if body.Temporary == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("temporary", "body"))
+	}
+	if body.Timeout == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("timeout", "body"))
+	}
+	if body.Fault == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("fault", "body"))
+	}
+	return
+}
+
+// ValidateSearchRequestInternalServerErrorResponseBody runs the validations
+// defined on searchRequest_InternalServerError_response_body
+func ValidateSearchRequestInternalServerErrorResponseBody(body *SearchRequestInternalServerErrorResponseBody) (err error) {
 	if body.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}

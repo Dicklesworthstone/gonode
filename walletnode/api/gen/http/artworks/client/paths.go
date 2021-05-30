@@ -35,3 +35,8 @@ func RegisterTasksArtworksPath() string {
 func UploadImageArtworksPath() string {
 	return "/artworks/register/upload"
 }
+
+// SearchRequestArtworksPath returns the URL path to the artworks service searchRequest HTTP endpoint.
+func SearchRequestArtworksPath(term string) string {
+	return fmt.Sprintf("/artworks/search/%v", term)
+}

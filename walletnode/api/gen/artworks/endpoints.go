@@ -20,6 +20,7 @@ type Endpoints struct {
 	RegisterTask      goa.Endpoint
 	RegisterTasks     goa.Endpoint
 	UploadImage       goa.Endpoint
+	SearchRequest     goa.Endpoint
 }
 
 // RegisterTaskStateEndpointInput holds both the payload and the server stream
@@ -32,6 +33,15 @@ type RegisterTaskStateEndpointInput struct {
 	Stream RegisterTaskStateServerStream
 }
 
+// SearchRequestEndpointInput holds both the payload and the server stream of
+// the "searchRequest" method.
+type SearchRequestEndpointInput struct {
+	// Payload is the method payload.
+	Payload *ArtworkSearchRequestPayload
+	// Stream is the server stream used by the "searchRequest" method to send data.
+	Stream SearchRequestServerStream
+}
+
 // NewEndpoints wraps the methods of the "artworks" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
@@ -40,6 +50,7 @@ func NewEndpoints(s Service) *Endpoints {
 		RegisterTask:      NewRegisterTaskEndpoint(s),
 		RegisterTasks:     NewRegisterTasksEndpoint(s),
 		UploadImage:       NewUploadImageEndpoint(s),
+		SearchRequest:     NewSearchRequestEndpoint(s),
 	}
 }
 
@@ -50,6 +61,7 @@ func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.RegisterTask = m(e.RegisterTask)
 	e.RegisterTasks = m(e.RegisterTasks)
 	e.UploadImage = m(e.UploadImage)
+	e.SearchRequest = m(e.SearchRequest)
 }
 
 // NewRegisterEndpoint returns an endpoint function that calls the method
@@ -113,5 +125,14 @@ func NewUploadImageEndpoint(s Service) goa.Endpoint {
 		}
 		vres := NewViewedImage(res, "default")
 		return vres, nil
+	}
+}
+
+// NewSearchRequestEndpoint returns an endpoint function that calls the method
+// "searchRequest" of service "artworks".
+func NewSearchRequestEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req interface{}) (interface{}, error) {
+		ep := req.(*SearchRequestEndpointInput)
+		return nil, s.SearchRequest(ctx, ep.Payload, ep.Stream)
 	}
 }
