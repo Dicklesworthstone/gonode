@@ -282,8 +282,8 @@ github.com/mattn/go-sqlite3 v1.14.5/go.mod h1:WVKg1VTActs4Qso6iwGbiFih2UIHo0ENGw
 github.com/mattn/go-sqlite3 v1.14.6 h1:dNPt6NO46WmLVt2DLNpwczCmdV5boIZ6g/tlDrlRUbg=
 github.com/mattn/go-sqlite3 v1.14.6/go.mod h1:NyWgC/yNuGj7Q9rpYnZvas74GogHl5/Z4A/KQRfk6bU=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/maxhora/goptuna v0.8.2-0.20210530181029-10d42120ab14 h1:/fs5RxYSmP6D+dpkBatB52XkT1371CBzxxlmzFnrZNg=
-github.com/maxhora/goptuna v0.8.2-0.20210530181029-10d42120ab14/go.mod h1:qnK1fZC2doq8flulLGBrB2Ir3MZMlwMyhvrALLM9KEc=
+github.com/maxhora/goptuna v0.8.2-0.20210530183139-d69de9b77661 h1:xa59YwguwipKdOvIoqBjgPkgt+bJ4tyj9nU1KRExI8A=
+github.com/maxhora/goptuna v0.8.2-0.20210530183139-d69de9b77661/go.mod h1:qnK1fZC2doq8flulLGBrB2Ir3MZMlwMyhvrALLM9KEc=
 github.com/mgechev/dots v0.0.0-20190921121421-c36f7dcfbb81/go.mod h1:KQ7+USdGKfpPjXk4Ga+5XxQM4Lm4e3gAogrreFAYpOg=
 github.com/mgechev/revive v1.0.2/go.mod h1:rb0dQy1LVAxW9SWy5R3LPUjevzUbUS316U5MFySA2lo=
 github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d/go.mod h1:01TrycV0kFyexm33Z7vhZRXopbI8J3TDReVlkTgMUxE=
