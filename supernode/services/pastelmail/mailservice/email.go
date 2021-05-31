@@ -1,4 +1,4 @@
-package mail_service
+package mailservice
 
 import "github.com/pastelnetwork/gonode/supernode/model"
 

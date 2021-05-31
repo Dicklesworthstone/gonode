@@ -1,4 +1,4 @@
-package nats_node
+package init
 
 import (
 	"github.com/pastelnetwork/gonode/supernode/model"

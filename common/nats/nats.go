@@ -14,28 +14,25 @@ type Connection struct {
 }
 
 // Connect for start connection to Nats and save object nats connection to struct Connection
-func Connect(host string, port int) (Connection, error) {
+// For connecting with Ping Interval the withPing variable should be set 'true'
+// For starting cluster connection isCluster should be set to 'true' and listConnection []string parameter should be sent
+func Connect(host string, port int, withPing bool, isCluster bool, listConnection []string) (Connection, error) {
 	natsServer := fmt.Sprintf("%s:%d", host, port)
+	if withPing {
+		nc, err := nats.Connect(natsServer, nats.PingInterval(20*time.Second), nats.MaxPingsOutstanding(5))
+		if err != nil {
+			return Connection{}, err
+		}
+		return Connection{nc}, nil
+	}
+	if isCluster {
+		nc, err := nats.Connect(strings.Join(listConnection, ","))
+		if err != nil {
+			return Connection{}, err
+		}
+		return Connection{nc}, nil
+	}
 	nc, err := nats.Connect(natsServer)
-	if err != nil {
-		return Connection{}, err
-	}
-	return Connection{nc}, nil
-}
-
-// Connect with Ping interval
-func ConnectAndPing(host string, port int) (Connection, error) {
-	natsServer := fmt.Sprintf("%s:%d", host, port)
-	nc, err := nats.Connect(natsServer, nats.PingInterval(20*time.Second), nats.MaxPingsOutstanding(5))
-	if err != nil {
-		return Connection{}, err
-	}
-	return Connection{nc}, nil
-}
-
-// ConnectCluster for start connection to Nats and save object nats connection to struct Connection
-func ConnectCluster(listConnection []string) (Connection, error) {
-	nc, err := nats.Connect(strings.Join(listConnection, ","))
 	if err != nil {
 		return Connection{}, err
 	}

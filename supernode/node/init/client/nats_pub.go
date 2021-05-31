@@ -1,4 +1,4 @@
-package nats_client
+package client
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"github.com/pastelnetwork/gonode/common/nats"
 
 	"github.com/pastelnetwork/gonode/supernode/model"
-	"github.com/pastelnetwork/gonode/supernode/node/nats_node"
+	"github.com/pastelnetwork/gonode/supernode/node/init"
 )
 
 type natsClient struct {
@@ -14,7 +14,7 @@ type natsClient struct {
 }
 
 // NewPublishService Create Repository / Service for send Message via Publish Nats
-func NewPublishService(NatsConn nats.Connection) nats_node.PastelMail {
+func NewPublishService(NatsConn nats.Connection) init.PastelMail {
 	return &natsClient{
 		NatsConn: NatsConn,
 	}

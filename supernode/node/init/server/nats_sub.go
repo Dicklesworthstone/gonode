@@ -1,4 +1,4 @@
-package nats_server
+package server
 
 import (
 	"encoding/json"

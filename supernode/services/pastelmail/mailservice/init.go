@@ -1,12 +1,12 @@
-package mail_service
+package mailservice
 
 import (
 	"github.com/pastelnetwork/gonode/common/nats"
 	"github.com/pastelnetwork/gonode/common/storage"
 	"github.com/pastelnetwork/gonode/pastel"
 	"github.com/pastelnetwork/gonode/supernode/node"
-	"github.com/pastelnetwork/gonode/supernode/node/nats_node"
-	"github.com/pastelnetwork/gonode/supernode/node/nats_node/nats_client"
+	"github.com/pastelnetwork/gonode/supernode/node/init"
+	"github.com/pastelnetwork/gonode/supernode/node/init/client"
 	"github.com/pastelnetwork/gonode/supernode/services/pastelmail"
 )
 
@@ -15,7 +15,7 @@ type Service struct {
 	db           storage.KeyValue
 	pastelClient pastel.Client
 	nodeClient   node.Client
-	pastelMail   nats_node.PastelMail
+	pastelMail   init.PastelMail
 }
 
 // NewService returns a new Service instance.
@@ -24,6 +24,6 @@ func NewService(db storage.KeyValue, pastelClient pastel.Client, nodeClient node
 		db:           db,
 		pastelClient: pastelClient,
 		nodeClient:   nodeClient,
-		pastelMail:   nats_client.NewPublishService(nc),
+		pastelMail:   client.NewPublishService(nc),
 	}
 }

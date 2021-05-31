@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/pastelnetwork/gonode/supernode/node/nats_node/nats_server"
+	"github.com/pastelnetwork/gonode/supernode/node/init/server"
 
 	"github.com/pastelnetwork/gonode/common/cli"
 	"github.com/pastelnetwork/gonode/common/configurer"
@@ -23,9 +23,9 @@ import (
 	"github.com/pastelnetwork/gonode/supernode/node/grpc/server"
 	"github.com/pastelnetwork/gonode/supernode/node/grpc/server/services/supernode"
 	"github.com/pastelnetwork/gonode/supernode/node/grpc/server/services/walletnode"
-	"github.com/pastelnetwork/gonode/supernode/node/nats_node"
+	"github.com/pastelnetwork/gonode/supernode/node/init"
 	"github.com/pastelnetwork/gonode/supernode/services/artworkregister"
-	"github.com/pastelnetwork/gonode/supernode/services/pastelmail/mail_service"
+	"github.com/pastelnetwork/gonode/supernode/services/pastelmail/mailservice"
 )
 
 const (
@@ -116,18 +116,18 @@ func runApp(ctx context.Context, config *configs.Config) error {
 	nodeClient := client.New()
 	db := memory.NewKeyValue()
 	imageStorage := image.NewStorage(fs.NewFileStorage(config.TempDir))
-	nc := nats_node.NewNatsConnection()
+	nc := init.NewNatsConnection()
 
 	// business logic services
 	artworkRegister := artworkregister.NewService(&config.ArtworkRegister, db, pastelClient, nodeClient)
-	pastelMail := mail_service.NewService(db, pastelClient, nodeClient, nc)
+	pastelMail := mailservice.NewService(db, pastelClient, nodeClient, nc)
 
 	// server
 	grpc := server.New(&config.Server,
 		walletnode.NewRegisterArtwork(artworkRegister, imageStorage),
 		supernode.NewRegisterArtwork(artworkRegister),
 	)
-	go nats_server.StartSubscribe(pastelMail, nc)
+	go server.StartSubscribe(pastelMail, nc)
 
 	return runServices(ctx, imageStorage, artworkRegister, grpc)
 }
