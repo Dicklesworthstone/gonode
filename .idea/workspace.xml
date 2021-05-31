@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b23ec19-b131-4d9a-86c1-f8d2b9c7d947" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/common/nats/nats.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/nats/nats.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/cmd/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/cmd/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/node/nats_node/nats_client/nats_pub.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/node/nats_node/client/nats_pub.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/node/nats_node/nats_init.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/node/nats_node/nats_init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/node/nats_node/nats_server/nats_sub.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/node/nats_node/server/nats_sub.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/services/pastelmail/mail_service/email.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/services/pastelmail/mailservice/email.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supernode/services/pastelmail/mail_service/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/supernode/services/pastelmail/mailservice/init.go" afterDir="false" />
-    </list>
+    <list default="true" id="7b23ec19-b131-4d9a-86c1-f8d2b9c7d947" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
